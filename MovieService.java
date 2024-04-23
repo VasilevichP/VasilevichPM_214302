@@ -35,13 +35,10 @@ public class MovieService {
         } catch (SocketException e) {
             movie = null;
         }
-        if (movie.getId() == null) System.out.println("Не найдено информации по данному фильму");
-        else if (movie.getMovieLength() == 0)
-            System.out.println("Данный фильм не предназначен для просмотра в кинотеатре");
         return movie;
     }
 
-    public boolean findMovieById(Long id) {
+    public boolean findById(Long id) {
         Optional<Movie> optMov = movieRepository.findById(id);
         if (optMov.isEmpty()) return false;
         else return true;
@@ -63,9 +60,7 @@ public class MovieService {
 
     public boolean addMovieToDB(Movie movie) {
         try {
-            System.out.println("я тут был");
             movieRepository.save(movie);
-            System.out.println("готово");
             return true;
         } catch (Exception e) {
             return false;
@@ -83,10 +78,11 @@ public class MovieService {
         genres = genres.substring(0, genres.lastIndexOf(','));
         return genres;
     }
+
     public ArrayList<String> findArrGenres(long id) {
         ArrayList<Genres> genre = genresRepository.findByMovie(id);
         ArrayList<String> gens = new ArrayList<>();
-        for (Genres g:genre) gens.add(g.getGenre());
+        for (Genres g : genre) gens.add(g.getGenre());
         return gens;
     }
 
@@ -109,7 +105,6 @@ public class MovieService {
         for (Movie m : allMovies) {
             if (m.getName().toLowerCase().contains(search.toLowerCase().strip())) {
                 searched.add(m);
-                System.out.println(m.getName());
             }
         }
         return searched;
@@ -162,11 +157,14 @@ public class MovieService {
                 .collect(Collectors.toList());
         Stream<Movie> movs = movies.stream();
         switch (filt) {
-            case "-":return movies;
+            case "-":
+                return movies;
             case "2", "3", "5", "7":
-                allMovies = movs.filter(m -> m.getPermission() == Integer.parseInt(filt)).collect(Collectors.toList());return allMovies;
+                allMovies = movs.filter(m -> m.getPermission() == Integer.parseInt(filt)).collect(Collectors.toList());
+                return allMovies;
             case "0", "6", "12", "18":
-                allMovies = movs.filter(m -> m.getAgeRating() == Integer.parseInt(filt)).collect(Collectors.toList());return allMovies;
+                allMovies = movs.filter(m -> m.getAgeRating() == Integer.parseInt(filt)).collect(Collectors.toList());
+                return allMovies;
             default:
                 System.out.println(filt);
                 ArrayList<Movie> deleted = new ArrayList<>();
@@ -176,8 +174,8 @@ public class MovieService {
                     }
                 }
                 movies.removeAll(deleted);
-                }
-                return movies;
         }
+        return movies;
+    }
 
 }

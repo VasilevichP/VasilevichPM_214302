@@ -1,9 +1,6 @@
 package com.example.Cinesoft.Services;
 
-import com.example.Cinesoft.Entities.Account;
 import com.example.Cinesoft.Entities.Hall;
-import com.example.Cinesoft.Entities.Movie;
-import com.example.Cinesoft.Repositories.AccountRepository;
 import com.example.Cinesoft.Repositories.HallRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -36,8 +33,13 @@ public class HallService {
         else hall.setStatus(true);
         hallRepository.save(hall);
     }
-    public void delete(long id){
-        hallRepository.deleteById(id);
+    public boolean deleteById(long id){
+        try {
+            hallRepository.deleteById(id);return true;
+        }
+        catch (Exception e){
+            return false;
+        }
     }
 
     public Hall getHall(Long id){

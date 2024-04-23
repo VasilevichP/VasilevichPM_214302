@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
 </head>
 <body style="background-image: linear-gradient(120deg, #e89df3, #9eaaef);">
-<div class="container w3-black w3-padding"
+<div class="container w3-black w3-padding" id="heder"
      style="align-content: flex-start;position: fixed;top: 0;left: 0;width: 100%;">
     <div class="w3-bar">
         <a href="mainpage" class="w3-bar-item">
@@ -18,16 +18,64 @@
         </a>
     </div>
 </div>
-<div class="container" style="margin-top: 18.7em"></div>
-<div class="scrolling-wrapper" style="position: fixed;top:7.7em;left: 0;width: 100%;margin-bottom: 5em">
+<div id="floatTip"></div>
+<div class="container" style="margin-top: 20.7em"></div>
+<span th:if="${success!=null}">
+    <div class="container" style="margin-top: 2em"></div>
+    <div class="w3-container w3-white w3-round-large center"
+         style="width: 50%;padding:10px 10px;text-align:center;margin: auto" th:text="${success}"></div>
+</span>
+<div class="scrolling-wrapper" style="position: fixed;top:7.7em;left: 0;width: 100%;margin-bottom: 5em" id="scrWrpr">
     <div th:each="movie:${movies}" class="card">
-        <div class="card" draggable="true" ondragstart="dragStart(event)">
-            <img th:src="@{${movie.getPoster()}}" onerror="this.src='/images/noimg.png'" th:width="80"
-                 style="margin-top: 2em" th:height="100">
+        <div class="card">
+            <img class="dropobject" th:src="@{${movie.getPoster()}}" draggable="true" onclick="showForm(event)"
+                 th:name="${movie.getName()}"
+                 onerror="this.src='/images/noimg.png'" th:width="80"
+                 th:onMouseOver="'toolTip(\'Номер фильма:'+${movie.getId()}+' <br>Формат: '+${movie.getPermission()}+'D<br>Возрастное ограничение:'+${movie.getAgeRating()}+'\')'"
+                 onmouseout="hideToolTip()"
+                 style="margin-top: 2em" th:height="100" th:id="'m'+${movie.getId()}">
             <p th:text="${movie.getName()}" STYLE="color: white;line-height: 0.2em"></p>
             <p th:text="${movie.getMovieLength()}+' минут'" STYLE="color: white;line-height: 0.2em"></p>
         </div>
     </div>
+</div>
+
+<div type="container" style="padding: 5px">
+    <form action="/session_creation/create" method="post" class="container w3-round-large w3-black w3-padding"
+          style="display: none;flex-direction:column;width:25%;justify-content: center;margin: auto;" id="inputForm">
+        <label for="sesMovie">Фильм:</label>
+        <input id="sesMovie" name="sesMovie"
+               style="background-color: black;color: white;outline: none;margin-bottom: 0.5em" readonly>
+        <label for="sesName">Название:</label>
+        <input id="sesName" name="sesName"
+               style="background-color: black;color: white;outline: none;margin-bottom: 0.5em" readonly>
+        <label for="sesHall">Зал:</label>
+        <select id="sesHall" name="sesHall" style="background-color: white;color: black;margin-bottom: 0.5em"></select>
+        <label for="sesDate">Дата показа:</label>
+        <input type="date" name="sesDate" id="sesDate" label="Дата показа" th:min="${dates[1]}"
+               th:max="${dates[dates.size()-1]}" th:value="${dates[1]}"
+               style="margin-bottom: 0.5em" required>
+        <label for="sesStartTime">Время начала показа:</label>
+        <input type="time" name="sesStartTime" id="sesStartTime" min="08:00" max="22:00" value="08:00"
+               onchange="changeTime(event)" style="margin-bottom: 0.5em" required>
+        <label for="sesEndTime">Время конца показа:</label>
+        <input name="sesEndTime" id="sesEndTime"
+               style="background-color: black;color: white;outline: none;margin-bottom: 0.5em" readonly required>
+        <p id="error" style="display: none;color: #ff3131"></p>
+        <div type="container" style="display: flex;flex-direction: row">
+            <button type="submit" id="sesButton"
+                    class="btn btn-success w3-round-large w3-hover-black w3-hover-text-white w3-right w3-border-black w3-hover-border-black"
+                    style="background-color: white;text-align: center;color: black; height: 2.5em;width: 30%;margin-bottom: 0.5em;vertical-align:bottom"
+                    disabled>Создать
+            </button>
+            <button id="cancelButton" type="button"
+                    class="w3-round-large w3-hover-white w3-hover-text-black w3-right w3-border-black w3-hover-border-black"
+                    onclick="hideForm(event)"
+                    style="background-color: black;text-align: center;color: white; height: 2.5em;width: 30%;margin-bottom: 0.5em;vertical-align:bottom">
+                Отмена
+            </button>
+        </div>
+    </form>
 </div>
 <div th:each="date:${dates}">
     <div class="container" style="margin-top: 2em"></div>
@@ -38,14 +86,17 @@
         </div>
         <div th:each="hall:${halls}">
             <div style="display:flex;flex-direction: row;width:100%;justify-content: normal;margin: auto;padding: 5px 0px 5px 0px">
-                <p th:text="'Зал №'+${hall.getId()}+'  ('+${hall.getPermission()}+'D)'" style="padding: 3px;margin-top: -0.5%;   text-align: center"></p>
+                <p th:text="'Зал №'+${hall[0]}+'  ('+${hall[1]}+'D)'"
+                   style="padding: 3px;margin-top: -0.5%;   text-align: center"></p>
                 <div>
-                    <div class="rectangle-hidden">
-                        <div class="rectangle-text" style="padding-left:0px; margin-top: -0.7%">9:00</div>
-                            <div class="rectangle-text" style="margin-top: -0.7%;margin-left: auto">23:00</div>
-                        </div>
-                        <div class="rectangle" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
-                        <div class="rectangle-hidden"></div>
+                    <div class="rectangle-hidden-static">
+                        <div class="rectangle-text" style=" margin-top: 0.3%">8:00</div>
+                        <div class="rectangle-text" style="margin-top: 0.3%;right: 0">0:00</div>
+                    </div>
+                    <div class="rectangle"
+                         th:id="${date.getYear()}+''+${date.getMonthValue()}+''+${date.getDayOfMonth()}+''+${hall[0]}"></div>
+                    <div class="rectangle-hidden"
+                         th:id="'hid'+${date.getYear()}+''+${date.getMonthValue()}+''+${date.getDayOfMonth()}+''+${hall[0]}"></div>
                 </div>
             </div>
         </div>
@@ -53,19 +104,202 @@
 </div>
 <div class="container" style="margin-top: 2em"></div>
 <script>
-    function dragStart(event) {
+    function moveTip(e) {
+        floatTipStyle = document.getElementById("floatTip").style;
+        w = 300;
+        if (document.all) {
+            x = event.clientX + document.body.scrollLeft;
+            y = event.clientY + document.body.scrollTop;
+        } else {
+            x = e.pageX;
+            y = e.pageY;
+        }
+        if ((x + w + 10) < document.body.clientWidth) {
+            floatTipStyle.left = x + 'px';
+        } else {
+            floatTipStyle.left = x - w + 'px';
+        }
+        floatTipStyle.top = y + 20 + 'px';
+        floatTipStyle.zIndex = document.getElementById("scrWrpr").style.zIndex + 1;
+    }
+
+    function toolTip(msg) {
+        floatTipStyle = document.getElementById("floatTip").style;
+        if (msg) {
+            document.getElementById("floatTip").innerHTML = msg;
+            floatTipStyle.display = "block";
+        } else {
+            floatTipStyle.display = "none";
+        }
+    }
+
+    function toolTip(msg) {
+        floatTipStyle = document.getElementById("floatTip").style;
+        if (msg) {
+            document.getElementById("floatTip").innerHTML = msg;
+            floatTipStyle.display = "block";
+        } else {
+            floatTipStyle.display = "none";
+        }
+    }
+
+    function hideToolTip() {
+        document.getElementById("floatTip").style.display = "none";
+    }
+
+    var movies = [[${movs}]];
+    var halls = [[${halls}]];
+    var sessions = [[${sessions}]];
+    if (sessions.length != 0) {
+        for (var i = 0; i < sessions.length; i++) {
+            var sthours = sessions[i][5];
+            var stmins = sessions[i][6];
+            var endhours = sessions[i][7];
+            var endmins = sessions[i][8];
+            var movieID = sessions[i][9];
+            var startlen = (sthours * 60 + stmins - 480) * 90 / 960;
+            var endlen = (endhours * 60 + endmins - 480) * 90 / 960;
+            let session = document.createElement('div');
+            session.classList.add('rectangle-object');
+            session.id = "s" + String(sessions[i][0]);
+            session.style.width = (endlen - startlen) + "em";
+            var parId = String(sessions[i][2]) + '' + String(sessions[i][3]) + '' + String(sessions[i][4]) + '' + String(sessions[i][1])
+            document.getElementById(parId).appendChild(session);
+            session.style.zIndex = document.getElementById("heder").style.zIndex;
+            session.style.left = startlen + "em";
+            var mname = document.getElementById(String("m"+movieID)).getAttribute('name');
+            let mn = document.createElement('p');mn.innerHTML=mname;
+            mn.style.color='white';mn.style.marginBlock="0";mn.style.paddingLeft="0.4em";
+            session.appendChild(mn);
+            let stt = document.createElement('p');
+            let endt = document.createElement('p');
+            stt.classList.add('rectangle-text');
+            endt.classList.add('rectangle-text');
+            stt.innerHTML = String(sthours) + ":" + (stmins < 10 ? "0" + String(stmins) : String(stmins));
+            endt.innerHTML = String(endhours) + ":" + (endmins < 10 ? "0" + String(endmins) : String(endmins));
+            var hidPar = document.getElementById("hid" + parId);
+            hidPar.appendChild(stt);
+            hidPar.appendChild(endt);
+            stt.style.left = startlen  + "em";
+            endt.style.left = endlen -2.5 + "em";
+            stt.style.zIndex = document.getElementById("scrWrpr").style.zIndex;
+            endt.style.zIndex = document.getElementById("scrWrpr").style.zIndex;
+            document.getElementById("scrWrpr").style.zIndex = session.style.zIndex + 1;
+            document.getElementById("heder").style.zIndex = session.style.zIndex + 1
+        }
+    }
+    document.ondragstart = function (event) {
         event.dataTransfer.setData("Text", event.target.id);
+        //event.target.style.height = "50px";
+    };
+
+
+    document.ondragover = function (event) {
+        event.preventDefault();
+    };
+
+    document.ondrop = function (event) {
+        event.preventDefault();
+        if (event.target.className == "rectangle") {
+            const data = event.dataTransfer.getData("Text");
+            event.target.appendChild(document.getElementById(data));
+        }
+    };
+    document.ondrop = function (event) {
+        event.preventDefault();
+        if (event.target.className == "rectangle") {
+            const data = event.dataTransfer.getData("Text");
+            event.target.appendChild(document.getElementById(data));
+        }
+    };
+
+    function showForm() {
+        document.getElementById("inputForm").style.display = "flex";
+        document.getElementById("inputForm").scrollIntoView({block: "end", behavior: "smooth"});
+        var movId = +String(event.target.id).slice(1);
+        var movName = event.target.getAttribute('name');
+        console.log(movName);
+        var movPerm;
+        for (var i = 0; i < movies.length; i++) {
+            if (movies[i][0] == movId) {
+                movPerm = movies[i][2];
+                break;
+            }
+        }
+        const select = document.getElementById("sesHall");
+        for (var i = select.options.length - 1; i >= 0; i--) select.options.remove(i);
+        document.getElementById("sesMovie").value = movId;
+        document.getElementById("sesName").value = movName;
+        for (var i = 0; i < halls.length; i++) {
+            if (halls[i][1] == movPerm) select.options[select.options.length] = new Option(halls[i][0], halls[i][0]);
+        }
+    };
+
+    function hideForm(event) {
+        document.getElementById("inputForm").style.display = "none";
     }
 
-    function allowDrop(event) {
-        event.preventDefault();
+    function changeTime(event) {
+        var stTime = document.getElementById("sesStartTime").value;
+        var hours = +stTime.slice(0, 2);
+        var minutes = +stTime.slice(3);
+        var movie = document.getElementById("sesMovie").value;
+        var movLen;
+        var movAge;
+        for (var i = 0; i < movies.length; i++) {
+            if (movies[i][0] == movie) {
+                movLen = movies[i][1] + 20;
+                movAge = movies[i][3];
+                break;
+            }
+        }
+        var date = document.getElementById("sesDate").value;
+        var year = +date.slice(0, 4);
+        var month = +date.slice(5, 7);
+        var day = +date.slice(8, 10);
+        var edate = new Date(year, month - 1, day, hours, minutes, 0, 0);
+        var sdate = new Date(year, month - 1, day, hours, minutes, 0, 0);
+        var shours = sdate.getHours();
+        var smins = sdate.getMinutes();
+        edate.setMinutes(edate.getMinutes() + movLen);
+        var ehours = edate.getHours();
+        var emins = edate.getMinutes();
+        if (movAge == 18 && hours < 20) errActions("Фильмы 18+ не могут начинаться раньше 20:00");
+        else {
+            if (edate.getDate() == day) {
+                var overlap = false;
+                for (var i = 0; i < sessions.length; i++) {
+                    var sel = document.getElementById("sesHall");
+                    var otherStart = new Date(sessions[i][2], sessions[i][3] - 1, sessions[i][4], sessions[i][5], sessions[i][6]);
+                    var otherEnd = new Date(sessions[i][2], sessions[i][3] - 1, sessions[i][4], sessions[i][7], sessions[i][8]);
+                    if ((sel.options[sel.selectedIndex].value == sessions[i][1]) && ((edate > otherStart && edate < otherEnd) || (sdate > otherStart && sdate < otherEnd))) {
+                        overlap = true;
+                        break;
+                    }
+                }
+                if (overlap) {
+                    errActions("В это время уже проводится сеанс");
+                } else {
+                    document.getElementById("error").style.display = "none";
+                    document.getElementById("sesEndTime").value = (ehours < 10 ? "0" + ehours : ehours) + ":" + (emins < 10 ? "0" + emins : emins);
+                    document.getElementById("sesButton").disabled = false;
+                }
+            } else {
+                errActions("Слишком позднее время сеанса");
+            }
+        }
     }
 
-    function drop(event) {
-        event.preventDefault();
-        const data = event.dataTransfer.getData("Text");
-        event.target.appendChild(document.getElementById(data));
+    function errActions(let) {
+        const err = document.getElementById("error");
+        document.getElementById("sesEndTime").value = "";
+        err.style.display = "block";
+        err.innerHTML = let;
+        document.getElementById("sesButton").disabled = true;
     }
+
+    document.onmousemove = moveTip;
+
 </script>
 </body>
 </html>

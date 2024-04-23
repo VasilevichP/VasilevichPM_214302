@@ -33,7 +33,6 @@ public class AccountService {
         catch (Exception e){
             return false;
         }
-
     }
 
     public int checkPassword(String password){
@@ -73,11 +72,6 @@ public class AccountService {
         if (BCrypt.checkpw(password,acc.getPassword())) return true;
         else return false;
     }
-
-    public void deleteAccount(Account acc) {
-        accountsRepository.delete(acc);
-    }
-
     public void deleteAccountByLogin(String login) {
         accountsRepository.deleteById(login);
     }
