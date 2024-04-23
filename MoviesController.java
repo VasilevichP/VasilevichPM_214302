@@ -48,15 +48,16 @@ public class MoviesController {
                         }
                         model.addAttribute("genres", genres);
                     }
-                    if (session.getAttribute("filtValue") != null)
-                        System.out.println("f. v. :"+session.getAttribute("filtValue"));
+                    if (session.getAttribute("filtValue") != null) {
+                        System.out.println("f. v. :" + session.getAttribute("filtValue"));
                         model.addAttribute("filtValue", session.getAttribute("filtValue"));
+                    }
                     if (session.getAttribute("sortValue") != null) {
-                        System.out.println("s. v. :"+session.getAttribute("sortValue"));
+                        System.out.println("s. v. :" + session.getAttribute("sortValue"));
                         model.addAttribute("sortValue", session.getAttribute("sortValue"));
                     }
                     ArrayList<String> distGenres = movieService.getDistinctGens();
-                    model.addAttribute("distGenres",distGenres);
+                    model.addAttribute("distGenres", distGenres);
                 }
                 return "films";
             }
@@ -83,14 +84,12 @@ public class MoviesController {
         Iterable<Movie> movies = movieService.getAllMovies();
         if (filtBox.isPresent()) {
             String filt = filtBox.get();
-            System.out.println(filt);
             movies = movieService.filter(movies, filt);
             session.removeAttribute("filtValue");
             session.setAttribute("filtValue", filt);
         }
         if (sortBox.isPresent()) {
             String sort = sortBox.get();
-            System.out.println("sb: " + sort);
             movies = movieService.sort(movies, sort);
             session.removeAttribute("sortValue");
             session.setAttribute("sortValue", sort);

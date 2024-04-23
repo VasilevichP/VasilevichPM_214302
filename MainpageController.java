@@ -18,7 +18,6 @@ public class MainpageController {
         System.out.println("mainpage us:" +us);
         if (us!=null) {
             if ((us.equals("admin") || us.equals("user"))) {
-                System.out.println("mainpage2 us:" +us);
                 model.addAttribute("user", us);
                 return "mainpage";
             }
@@ -28,8 +27,6 @@ public class MainpageController {
 
     @PostMapping("/mainpage/toRequest")
     public String toRequest(Model model, HttpSession session, RedirectAttributes redirectAttributes){
-        System.out.println("us name: "+model.getAttribute("user"));
-        System.out.println("ses name: "+session.getAttribute("user"));
         redirectAttributes.addFlashAttribute("user", model.getAttribute("user"));
         return "redirect:/film_request";
     }

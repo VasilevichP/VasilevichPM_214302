@@ -60,21 +60,16 @@ public class MovieRequestController {
             if (movie.getId() == null) model.addAttribute("error", "Не найдено информации по запрашиваемому фильму");
             else if (movie.getMovieLength() == 0)
                 model.addAttribute("error", "Данный фильм не предназначен для просмотра в кинотеатре");
-            else if (movieServices.findMovieById(movie.getId()))
+            else if (movieServices.findById(movie.getId()))
                 model.addAttribute("error", "Данный фильм уже есть в базе данных кинотеатра");
             else {
                 if (!movie.getName().equals(title))
                     model.addAttribute("warning", "Возможно, вы имели ввиду этот фильм");
-                System.out.println("yo ho hoi");
                 String genres = "";
                 StringBuilder stringBuilder = new StringBuilder(genres);
-                for (String s : movieGenres) {
-                    System.out.println(s);
-                    stringBuilder.append(s + ", ");
-                }
+                for (String s : movieGenres) {stringBuilder.append(s + ", ");}
                 genres = stringBuilder.toString();
                 genres = genres.substring(0, genres.lastIndexOf(','));
-                System.out.println(genres);
                 model.addAttribute("movie", movie);
                 session.setAttribute("movie", movie);
                 model.addAttribute("genres", genres);

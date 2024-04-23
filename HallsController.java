@@ -1,8 +1,6 @@
 package com.example.Cinesoft.Controllers;
 
-import com.example.Cinesoft.Entities.Account;
 import com.example.Cinesoft.Entities.Hall;
-import com.example.Cinesoft.Services.AccountService;
 import com.example.Cinesoft.Services.HallService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,13 +35,15 @@ public class HallsController {
     }
 
     @PostMapping("/halls/add")
-    public String addAccount(@RequestParam String perm, @RequestParam int places, Model model, HttpSession session) {
+    public String addHall(@RequestParam String perm, @RequestParam int places, Model model, HttpSession session) {
         System.out.println("perm: "+perm);int permission = Integer.parseInt(perm);
         System.out.println("places: "+places);
         Hall hall = new Hall(permission,true,places);
         hallService.addHallToDB(hall);
+        model.addAttribute("success","Созданный зал был добавлен в базу данных");
         return get(model, session);
     }
+
     @GetMapping("/halls/status/{id}")
     public String changeStatus(@PathVariable(value = "id") long id, Model model, HttpSession session) {
         System.out.println("hall id:" + id);
@@ -54,8 +54,8 @@ public class HallsController {
     @GetMapping("/halls/delete/{id}")
     public String delete(@PathVariable(value = "id") long id, Model model, HttpSession session) {
         System.out.println("hall id:" + id);
-        hallService.delete(id);
-        model.addAttribute("deleted",id);
+        hallService.deleteById(id);
+        model.addAttribute("success","Зал " +id+ " был удален из базы данных");
         return get(model, session);
     }
     @GetMapping({"/halls/mainpage","/halls/status/mainpage","/halls/delete/mainpage"})
