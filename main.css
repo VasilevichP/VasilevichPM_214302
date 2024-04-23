@@ -159,21 +159,64 @@ p {
 
 .rectangle {
     display:flex;flex-direction: row;width:100%;justify-content: normal;
+    position: relative;
     width: 90em;
     height: 50px;
     border: 1px solid #000000;
 }
 .rectangle-hidden{
+    position: relative;
+    display:flex;flex-direction: row;width:100%;justify-content: normal;
+    width: 90em;
+    height: 10px;
+}
+.rectangle-hidden-static{
     display:flex;flex-direction: row;width:100%;justify-content: normal;
     width: 90em;
     height: 10px;
 }
 .rectangle-object{
+    position: absolute;
     height: 50px;
-    color: black;
+    background-color: black;
 }
 .rectangle-text{
+    top:-1em;
     height: 10px;
     color: black;
     font-size: math;
+    position: absolute;
+}
+.dropobject{
+
+}
+.droptarget{
+
+}
+[data-tooltip] {
+    position: relative;
+}
+[data-tooltip]::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    width: 300px;
+    left: 0; top: 0;
+    background: #fffeff;
+    color: #4f4f4f;
+    padding: 0.2em;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+    pointer-events: none;
+    opacity: 0;
+    transition: 1s;
+}
+[data-tooltip]:hover::after {
+    opacity: 1;
+    top: 2em;
+}
+#floatTip {
+    position: absolute;
+    width: 250px; display: none;
+    border: 1px solid #000; padding: 4px;
+    font-family: sans-serif; font-size: 9pt;
+    color: #444444; background: #ffffff;
 }
